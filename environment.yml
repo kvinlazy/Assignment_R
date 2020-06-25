@@ -1,6 +1,0 @@
-name: test-environment
-channels:
-  - defaults
-dependencies:
-  - r-ggplot2
-  - r-dplyr
