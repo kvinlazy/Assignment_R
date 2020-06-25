@@ -2,6 +2,7 @@ name: Forecast-environment
 channels:
   - conda-forge
 dependencies:
+  - r
   - python
   - numpy
   - matplotlib
