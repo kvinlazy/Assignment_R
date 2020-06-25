@@ -2,4 +2,5 @@ name: test-environment
 channels:
   - conda-forge
 dependencies:
-  - r
+  - ggplot2
+  - dplyr
