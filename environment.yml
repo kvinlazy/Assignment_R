@@ -1,0 +1,14 @@
+name: Forecast-environment
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - matplotlib
+  - pandas
+  - seaborn
+  - scikit-learn
+  - pandas_ml
+  - pip
+  - graphviz
+  - pydotplus
