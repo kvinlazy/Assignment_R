@@ -7,4 +7,4 @@ install.packages('ggplot2')
 install.packages('dplyr')
 install.packages('plyr')
 install.packages('dplyr')
-install.package('kintr')
+
