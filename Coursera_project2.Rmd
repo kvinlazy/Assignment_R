@@ -1,0 +1,163 @@
+---
+title: "Assignment 2 of Reproducible Research"
+author: "Kevin Naik"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: Leonids
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE)
+```
+
+##### Note: Few of the output are deleted and commented. The reason is document can be easily readerable
+
+### Import Library
+library(ggplot2) 
+
+```{r echo = FALSE,include=FALSE}
+library(ggplot2) 
+```
+
+### Download data in zip format and unzip
+#### The data for this assignment come in the form of a comma-separated-value file compressed via the bzip2 algorithm to reduce its size. You can download the file from the course web site:
+
+##### Dataset: [Storm Data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2)
+```{r echo = TRUE}
+download.file('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2','storm.csv.bz2',method = "auto", quiet=FALSE)
+```
+### Read Data in CSV
+#### 1. Load the data 
+#### 2. Process/transform the data (if necessary) into a format suitable for your analysis
+```{r echo = TRUE}
+my_data <- read.csv("storm.csv.bz2")
+```
+### Variables we are interested 
+#### Health variables:
+* FATALITIES
+* INJURIES
+
+#### Economic variables:
+* PROPDMG
+* PROPDMGEXP
+* CROPDMG
+* CROPDMGEXP
+
+#### Events - target variable:
+* EVTYPE
+```{r echo = TRUE}
+vars <- c( "EVTYPE", "FATALITIES", "INJURIES", "PROPDMG", "PROPDMGEXP", "CROPDMG", "CROPDMGEXP")
+data <- my_data[, vars]
+```
+#### Checking for NA values 
+```{r echo = TRUE,results = FALSE}
+sum(is.na(data$FATALITIES))
+sum(is.na(data$INJURIES))
+sum(is.na(data$PROPDMG))
+sum(is.na(data$CROPDMG))
+sum(is.na(data$PROPDMGEXP))
+sum(is.na(data$CROPDMGEXP))
+```
+#### Divide the hold data set into the groups 
+* Hail
+* Heat
+* Flood
+* Wind
+* Storm
+* Snow
+* Tornado
+* Winter
+* Rain
+```{r echo = TRUE}
+data$EVENT <- "OTHER"
+data$EVENT[grep("HAIL", data$EVTYPE, ignore.case = TRUE)] <- "HAIL"
+data$EVENT[grep("HEAT", data$EVTYPE, ignore.case = TRUE)] <- "HEAT"
+data$EVENT[grep("FLOOD", data$EVTYPE, ignore.case = TRUE)] <- "FLOOD"
+data$EVENT[grep("WIND", data$EVTYPE, ignore.case = TRUE)] <- "WIND"
+data$EVENT[grep("STORM", data$EVTYPE, ignore.case = TRUE)] <- "STORM"
+data$EVENT[grep("SNOW", data$EVTYPE, ignore.case = TRUE)] <- "SNOW"
+data$EVENT[grep("TORNADO", data$EVTYPE, ignore.case = TRUE)] <- "TORNADO"
+data$EVENT[grep("WINTER", data$EVTYPE, ignore.case = TRUE)] <- "WINTER"
+data$EVENT[grep("RAIN", data$EVTYPE, ignore.case = TRUE)] <- "RAIN"
+data$PROPDMGEXP <- as.character(data$PROPDMGEXP)
+```
+#### If any NA replace it with 0
+```{r echo = TRUE}
+data$PROPDMGEXP[is.na(data$PROPDMGEXP)] <- 0
+```
+##### Remove all the values except Thousand, Million, Billion dollars
+```{r echo = TRUE}
+data$PROPDMGEXP[!grepl("K|M|B", data$PROPDMGEXP, ignore.case = TRUE)] <- 0
+```
+#### Convert character to numeric for analysis
+```{r echo = TRUE}
+data$PROPDMGEXP[grep("K", data$PROPDMGEXP, ignore.case = TRUE)] <- "3"
+data$PROPDMGEXP[grep("M", data$PROPDMGEXP, ignore.case = TRUE)] <- "6"
+data$PROPDMGEXP[grep("B", data$PROPDMGEXP, ignore.case = TRUE)] <- "9"
+data$PROPDMGEXP <- as.numeric(as.character(data$PROPDMGEXP))
+data$property.damage <- data$PROPDMG * 10^data$PROPDMGEXP
+```
+#### Same preprocessing of data (CROPDMGEXP)
+```{r echo = TRUE}
+data$CROPDMGEXP <- as.character(data$CROPDMGEXP)
+data$CROPDMGEXP[is.na(data$CROPDMGEXP)] <- 0
+data$CROPDMGEXP[!grepl("K|M|B", data$CROPDMGEXP, ignore.case = TRUE)] <- 0
+data$CROPDMGEXP[grep("K", data$CROPDMGEXP, ignore.case = TRUE)] <- "3"
+data$CROPDMGEXP[grep("M", data$CROPDMGEXP, ignore.case = TRUE)] <- "6"
+data$CROPDMGEXP[grep("B", data$CROPDMGEXP, ignore.case = TRUE)] <- "9"
+data$CROPDMGEXP <- as.numeric(as.character(data$CROPDMGEXP))
+data$crop.damage <- data$CROPDMG * 10^data$CROPDMGEXP
+```
+### 1. Across the United States, which types of events are most harmful with respect to population health?
+#### Plot top 10 reason for Death and Injury 
+```{r echo = TRUE}
+Death <- aggregate(data$FATALITIES, by = list(data$EVENT), FUN = sum)
+colnames(Death) <- c("EVENT", "Death")
+Death <- Death[order(Death$Death, decreasing = TRUE),][1:10,]
+```
+```{r}
+ggplot() + geom_bar(data = Death, aes(x = EVENT, y = Death, fill = interaction(Death, EVENT)), stat = "identity", show.legend = F) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + xlab("Event") + ylab("Death") + ggtitle("Top 10 weather events causing Fatalities")
+```
+```{r echo = TRUE}
+INJURIES <- aggregate(data$INJURIES, by = list(data$EVENT), FUN = sum)
+colnames(INJURIES) <- c("EVENT", "INJURIES")
+INJURIES <- INJURIES[order(INJURIES$INJURIES, decreasing = TRUE),][1:10,]
+```
+```{r}
+ggplot() + geom_bar(data = INJURIES, aes(x = EVENT, y = INJURIES, fill = interaction(INJURIES, EVENT)), stat = "identity", 
+                    show.legend = F) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + xlab("Event") + 
+ylab("Injuries") + ggtitle("Top 10 weather events causing Injuries")
+```
+
+### 2. Across the United States, which types of events have the greatest economic consequences?
+#### Two types of damage property and crop which would be plotted
+```{r echo = TRUE}
+Property <- aggregate(data$property.damage, by = list(data$EVENT), FUN = sum)
+colnames(Property) <- c("EVENT", "Property")
+Property <- Property[order(Property$Property, decreasing = TRUE),][1:10,]
+```
+```{r}
+ggplot() + geom_bar(data = Property, aes(x = EVENT, y = Property, fill = interaction(Property, EVENT)), stat = "identity", 
+                    show.legend = F) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + xlab("Event") + 
+ylab("Property Demage") + ggtitle("Top 10 weather events causing Property Damages")
+```
+```{r echo = TRUE}
+Crop <- aggregate(data$crop.damage, by = list(data$EVTYPE), FUN = sum)
+colnames(Crop) <- c("EVENT", "Crop")
+Crop <- Crop[order(Crop$Crop, decreasing = TRUE),][1:10,]
+```
+```{r}
+ggplot() + geom_bar(data = Crop, aes(x = EVENT, y = Crop, fill = interaction(Crop, EVENT)), stat = "identity", 
+                    show.legend = F) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + xlab("Event") + 
+ylab("Crop Damage") + ggtitle("Top 10 weather events causing Crop Damages")
+```
+
+## Result
+* First & Second plot shows that Death and Injury is most due to Tornado.
+* Third plot illustrates majority demage of property is due to Flood.
+* Fourth plot shows that Drought is event due to which Crop are demaged.
