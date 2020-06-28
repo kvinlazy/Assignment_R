@@ -1,5 +1,5 @@
 ---
-title: "Assignment 2 of Reproducible Research"
+title: "Data Analysis of impact of Storm data in USA between 1950-2011"
 author: "Kevin Naik"
 date: "`r Sys.Date()`"
 output:
@@ -14,13 +14,13 @@ vignette: >
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE)
 ```
-
+### Synopsis
+#### U.S. National Oceanic and Atmospheric Administration’s (NOAA) storm database is used to study impact of weather events on health and economy of the country.
 ##### Note: Few of the output are deleted and commented. The reason is document can be easily readerable
 
 ### Import Library
-library(ggplot2) 
 
-```{r echo = FALSE,include=FALSE}
+```{r echo = TRUE, results = FALSE}
 library(ggplot2) 
 ```
 
@@ -147,12 +147,12 @@ ggplot() + geom_bar(data = Property, aes(x = EVENT, y = Property, fill = interac
 ylab("Property Demage") + ggtitle("Top 10 weather events causing Property Damages")
 ```
 ```{r echo = TRUE}
-Crop <- aggregate(data$crop.damage, by = list(data$EVTYPE), FUN = sum)
-colnames(Crop) <- c("EVENT", "Crop")
-Crop <- Crop[order(Crop$Crop, decreasing = TRUE),][1:10,]
+C <- aggregate(data$crop.damage, by = list(data$EVTYPE), FUN = sum)
+colnames(C) <- c("EVENT", "Crop")
+C <- C[order(C$Crop, decreasing = TRUE),][1:10,]
 ```
 ```{r}
-ggplot() + geom_bar(data = Crop, aes(x = EVENT, y = Crop, fill = interaction(Crop, EVENT)), stat = "identity", 
+ggplot() + geom_bar(data = C, aes(x = EVENT, y = Crop, fill = interaction(Crop, EVENT)), stat = "identity", 
                     show.legend = F) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + xlab("Event") + 
 ylab("Crop Damage") + ggtitle("Top 10 weather events causing Crop Damages")
 ```
