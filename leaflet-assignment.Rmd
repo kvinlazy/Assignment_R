@@ -1,0 +1,196 @@
+---
+title: "Leaflet Assignment"
+author: "Kevin Naik"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE)
+```
+
+
+### Weather Station in Austrilia
+
+```{r echo=TRUE}
+library(leaflet)
+library(rattle)
+```
+
+```{r echo = FALSE, results='hide'}
+m <- leaflet() %>%
+  addTiles() %>%
+  setView(lng = 151.209900, lat = -33.865143, zoom = 5)  %>% 
+  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")  %>% 
+  addMarkers(lng = locationsAUS$longitude,lat = locationsAUS$latitude,popup = locationsAUS$stnID, label = locationsAUS$name)
+```
+
+### Click on the Marker to See the Detail of weather station
+
+```{r echo = FALSE}
+m
+```
+
+
+
+Daily weather observations from multiple Australian weather stations.
+---------------------------------------------------------------------
+
+### Description
+
+Daily weather observations from multiple locations around Australia, obtained from the Australian Commonwealth Bureau of Meteorology and processed to create this realtively large sample dataset for illustrating analytics, data mining, and data science using R and Rattle.
+
+The data has been processed to provide a target variable `RainTomorrow` (whether there is rain on the following day - No/Yes) and a risk variable `RISK_MM` (how much rain recorded in millimeters). Various transformations are performed on the data.
+
+The `weatherAUS` dataset is regularly updated an updates of this package usually correspond to updates to this dataset. The data is updated from the Bureau of Meteorology web site.
+
+The `locationsAUS` dataset records the location of each weather station.
+
+The source dataset comes from the Australian Commonwealth Bureau of Meteorology. The Bureau provided permission to use the data with the Bureau of Meteorology acknowledged as the source of the data, as per email from Cathy Toby (C.Toby@bom.gov.au) of the Climate Information Services of the National CLimate Centre, 17 Dec 2008.
+
+A CSV version of this dataset is available as <https://rattle.togaware.com/weatherAUS.csv>.
+
+### Usage
+
+weatherAUS
+
+### Format
+
+The `weatherAUS` dataset is a data frame containing over 140,000 daily observations from over 45 Australian weather stations.
+
+`Date`
+
+The date of observation (a Date object).
+
+`Location`
+
+The common name of the location of the weather station.
+
+`MinTemp`
+
+The minimum temperature in degrees celsius.
+
+`MaxTemp`
+
+The maximum temperature in degrees celsius.
+
+`Rainfall`
+
+The amount of rainfall recorded for the day in mm.
+
+`Evaporation`
+
+The so-called Class A pan evaporation (mm) in the 24 hours to 9am.
+
+`Sunshine`
+
+The number of hours of bright sunshine in the day.
+
+`WindGustDir`
+
+The direction of the strongest wind gust in the 24 hours to midnight.
+
+`WindGustSpeed`
+
+The speed (km/h) of the strongest wind gust in the 24 hours to midnight.
+
+`Temp9am`
+
+Temperature (degrees C) at 9am.
+
+`RelHumid9am`
+
+Relative humidity (percent) at 9am.
+
+`Cloud9am`
+
+Fraction of sky obscured by cloud at 9am. This is measured in "oktas", which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
+
+`WindSpeed9am`
+
+Wind speed (km/hr) averaged over 10 minutes prior to 9am.
+
+`Pressure9am`
+
+Atmospheric pressure (hpa) reduced to mean sea level at 9am.
+
+`Temp3pm`
+
+Temperature (degrees C) at 3pm.
+
+`RelHumid3pm`
+
+Relative humidity (percent) at 3pm.
+
+`Cloud3pm`
+
+Fraction of sky obscured by cloud (in "oktas": eighths) at 3pm. See Cload9am for a description of the values.
+
+`WindSpeed3pm`
+
+Wind speed (km/hr) averaged over 10 minutes prior to 3pm.
+
+`Pressure3pm`
+
+Atmospheric pressure (hpa) reduced to mean sea level at 3pm.
+
+`ChangeTemp`
+
+Change in temperature.
+
+`ChangeTempDir`
+
+Direction of change in temperature.
+
+`ChangeTempMag`
+
+Magnitude of change in temperature.
+
+`ChangeWindDirect`
+
+Direction of wind change.
+
+`MaxWindPeriod`
+
+Period of maximum wind.
+
+`RainToday`
+
+Integer: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0.
+
+`TempRange`
+
+Difference between minimum and maximum temperatures (degrees C) in the 24 hours to 9am.
+
+`PressureChange`
+
+Change in pressure.
+
+`RISK_MM`
+
+The amount of rain. A kind of measure of the "risk".
+
+`RainTomorrow`
+
+The target variable. Did it rain tomorrow?
+
+### Author(s)
+
+<Graham.Williams@togaware.com>
+
+### Source
+
+Observations were drawn from numerous weather stations. The daily observations are available from <https://www.bom.gov.au/climate/data>. Copyright Commonwealth of Australia 2010, Bureau of Meteorology.
+
+Definitions adapted from <https://www.bom.gov.au/climate/dwo/IDCJDW0000.shtml>
+
+### References
+
+Package home page: [https://rattle.togaware.com](https://rattle.togaware.com/). Data source: <https://www.bom.gov.au/climate/dwo/> and <https://www.bom.gov.au/climate/data>.
