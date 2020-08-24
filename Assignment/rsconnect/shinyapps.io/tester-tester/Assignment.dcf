@@ -1,0 +1,12 @@
+name: Assignment
+title: Assignment
+username:
+account: tester-tester
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2701699
+bundleId: 3552125
+url: https://tester-tester.shinyapps.io/Assignment/
+when: 1598290440.68355
+asMultiple: FALSE
+asStatic: FALSE
